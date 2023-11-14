@@ -1,4 +1,6 @@
 function [net,tr] = genrbfnet(X, Y, Z, N, StepN)
+%
+%
 x1 = reshape(X,1,[]);
 x2 = reshape(Y,1,[]);
 
