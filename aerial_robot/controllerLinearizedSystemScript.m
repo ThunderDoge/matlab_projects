@@ -28,3 +28,4 @@ R = diag(vr);
 
 K = lqr(A,B,Q,R,0);
 
+clear IB I3 Z3 vc R gvec vq vr
