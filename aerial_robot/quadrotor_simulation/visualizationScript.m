@@ -1,0 +1,1 @@
+poseplotContinous(out.P.Data', out.R.Data,1,true)
