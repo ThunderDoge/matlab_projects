@@ -1,1 +1,1 @@
-poseplotContinous(out.P.Data', out.R.Data,1,true)
+poseplotContinous(out.P.Data', out.R.Data, out.v.data', out.omega.data', 1,true)
