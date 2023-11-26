@@ -1,47 +1,51 @@
-% x: R^4 := [dpe; dve; d_lambda_e; d_omega_e]
-% u: R^4 := [-B_f; B_n(3-element)];
-IB = diag([1e-4,1e-4,1e-3]);
-I3 = eye(3);
-Z3 = zeros(3);
-Z34 = zeros(3,4);
-vc = [0.75;0.75;0];
-m =0.1;
+Oc = [0;0;0];
+Vc = [2;0;0];
+J = 1e-3 * diag([0.1,0.1,1]);
+g = 9.807;
+m = 0.25;
+Rcu = eye(3);
 
-R = [0.707 -0.707   0;
-     0.707  0.707   0;
-     0      0       1];
-gvec = transpose([0,0,9.807]);
+ddvdt_dv = 0*eye(3);
+ddvdt_dw = 0*eye(3);
+ddwdt_dw = 0*eye(3);
 
-A = [   Z3, I3, -skew(vc),      Z3;
-        Z3, Z3, skew(R'*gvec),  Z3;
-        Z3, Z3, Z3,             I3;
-        zeros(3,12)               ];
+A = [-skew(Oc) ,eye(3),-skew(Vc),zeros(3);
+    zeros(3),ddvdt_dv,skew(Rcu*[0;0;g]),ddvdt_dw;
+    zeros(3),zeros(3),-skew(Oc),eye(3);
+    zeros(3),zeros(3),zeros(3),ddwdt_dw;];
 
-B = zeros(12,4);
-B(4:6,1) = [0,0, -1/m]';
-B(10:12,2:4) = IB^-1;
+B = [[0;0;0],zeros(3);
+     [0;0;-1/m],zeros(3);
+     [0;0;0],zeros(3);
+     [0;0;0],J^-1;];
 
-A1 = [  Z3, I3, -skew(vc),      Z3, Z34;
-        Z3, Z3, skew(R'*gvec),  Z3, Z34;
-        Z3, Z3, Z3,             I3, Z34;
-        zeros(3,16);
-        I3, zeros(3,13);
-        [0,0,0],[0,0,0],[0,0,1],zeros(1,7)];
+A1 = [-skew(Oc) ,eye(3),-skew(Vc),zeros(3),zeros(3,4);
+    zeros(3),ddvdt_dv,skew(Rcu*[0;0;g]),ddvdt_dw,zeros(3,4);
+    zeros(3),zeros(3),-skew(Oc),eye(3),zeros(3,4);
+    zeros(3),zeros(3),zeros(3),ddwdt_dw,zeros(3,4);
+    eye(3),zeros(3),zeros(3),zeros(3),zeros(3,4);
+    zeros(1,3),zeros(1,3),[0,0,1],zeros(1,3),zeros(1,4)];
+B1 = [[0;0;0],zeros(3);
+     [0;0;-1/m],zeros(3);
+     [0;0;0],zeros(3);
+     [0;0;0],J^-1;
+     zeros(4,4)];
 
-vq = ones(1,12);
-Q =diag(vq);
+Nmc=0.00001;
+Q = eye(12); Q(1,1)=10; Q(2,2)=10; % 状态权重矩阵
+R1 = eye(4); R1(1,1)=Nmc; R1(2,2)=Nmc; R1(3,3)=Nmc;R1(4,4)=Nmc;  % 控制权重矩阵
 
-vr = ones(1,4);
-R = diag(vr);
+K = lqr(A,B,Q,R1,0);
 
-K = lqr(A,B,Q,R,0);
+Q1 = eye(16); Q(1,1)=10; Q(2,2)=10; % 状态权重矩阵
+R1 = eye(4); R1(1,1)=Nmc; R1(2,2)=Nmc; R1(3,3)=Nmc;R1(4,4)=Nmc;  % 控制权重矩阵
+
+K1 = lqr(A1,B1,Q1,R1,0);
 
 % System output. 
 % x = [dPe, dVe, dLe, dOmega_e, xI]
 % y = [dPe, dLe, dOmega_e, xI]
-C = [I3, Z3, Z3, Z3, Z3;
-     Z3, Z3, I3, Z3, Z3;
-     Z3, Z3, Z3, I3, Z3;
-     Z3, Z3, Z3, Z3, I3];
-
-clear I3 Z3 Z34 vc R gvec vq vr
+C = [eye(3), zeros(3), zeros(3), zeros(3), zeros(3);
+     zeros(3), zeros(3), eye(3), zeros(3), zeros(3);
+     zeros(3), zeros(3), zeros(3), eye(3), zeros(3);
+     zeros(3), zeros(3), zeros(3), zeros(3), eye(3)];
