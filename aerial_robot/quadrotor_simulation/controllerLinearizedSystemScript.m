@@ -45,7 +45,14 @@ K1 = lqr(A1,B1,Q1,R1,0);
 % System output. 
 % x = [dPe, dVe, dLe, dOmega_e, xI]
 % y = [dPe, dLe, dOmega_e, xI]
-C = [eye(3), zeros(3), zeros(3), zeros(3), zeros(3);
-     zeros(3), zeros(3), eye(3), zeros(3), zeros(3);
-     zeros(3), zeros(3), zeros(3), eye(3), zeros(3);
-     zeros(3), zeros(3), zeros(3), zeros(3), eye(3)];
+C1 = [eye(3), zeros(3), zeros(3), zeros(3), zeros(3,4);
+     zeros(3), zeros(3), eye(3), zeros(3), zeros(3,4);
+     zeros(3), zeros(3), zeros(3), eye(3), zeros(3,4);
+     zeros(4,3), zeros(4,3), zeros(4,3), zeros(4,3), eye(4)];
+
+D = zeros (13,4);
+
+sys = ss(A1,B1,C1,D);
+QN=eye(4);
+RN=eye(13)*0.001;
+[Kest,L]=kalman(sys,QN,RN);
