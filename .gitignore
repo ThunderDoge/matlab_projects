@@ -1,4 +1,7 @@
 *.asv
+*.csv
 *.mat
 *slprj*
 *.slxc
+Examples
+TestDirectory
