@@ -1,1 +1,9 @@
 *.asv
+*.csv
+*.mat
+*.fig
+*.svg
+*slprj*
+*.slxc
+Examples
+TestDirectory

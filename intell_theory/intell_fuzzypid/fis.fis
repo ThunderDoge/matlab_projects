@@ -1,0 +1,64 @@
+[System]
+Name='fis'
+Type='mamdani'
+Version=2.0
+NumInputs=2
+NumOutputs=3
+NumRules=8
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='e'
+Range=[-1 1]
+NumMFs=5
+MF1='LOW':'zmf',[-0.8 -0.5]
+MF2='APPROACH':'trapmf',[-0.4 -0.25 0.25 0.4]
+MF3='HIGH':'smf',[0.5 0.8]
+MF4='LOW_APP':'trimf',[-0.6 -0.4 -0.2]
+MF5='HIGH_APP':'trimf',[0.2 0.4 0.6]
+
+[Input2]
+Name='dedt'
+Range=[-10 10]
+NumMFs=3
+MF1='DOWN':'zmf',[-6 -2]
+MF2='SLOW':'trapmf',[-5 -3 3 5]
+MF3='UP':'smf',[2 6]
+
+[Output1]
+Name='dP'
+Range=[-1 10]
+NumMFs=2
+MF1='LARGE':'trimf',[0 1 2]
+MF2='NORMAL':'trimf',[-1 0 1]
+
+[Output2]
+Name='dI'
+Range=[-5 5]
+NumMFs=3
+MF1='ZERO':'trimf',[-1.5 -1 -0.5]
+MF2='NORMAL':'trimf',[-0.5 0 0.5]
+MF3='SMALL':'trimf',[-1 -0.5 0]
+
+[Output3]
+Name='dD'
+Range=[-10 10]
+NumMFs=4
+MF1='ZERO':'trimf',[2 4 6]
+MF2='NORMAL':'trimf',[-3.32 -0.28 3.08]
+MF3='SMALL':'trimf',[0 2 4]
+MF4='LARGE':'trimf',[-2 -1 0]
+
+[Rules]
+1 0, 1 1 4 (1) : 1
+3 0, 1 1 4 (1) : 1
+4 1, 1 1 4 (1) : 1
+5 3, 1 1 4 (1) : 1
+4 3, 2 3 2 (1) : 1
+5 1, 2 3 2 (1) : 1
+-2 2, 1 3 4 (1) : 1
+2 2, 1 2 4 (1) : 1

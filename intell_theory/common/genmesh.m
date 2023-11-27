@@ -6,5 +6,4 @@ function [X,Y,Z] = genmesh(fcn,x,y)
 [X,Y] = meshgrid(x,y);
 Z = fcn(X,Y);
 mesh(X,Y,Z);
-axis equal;
 end
