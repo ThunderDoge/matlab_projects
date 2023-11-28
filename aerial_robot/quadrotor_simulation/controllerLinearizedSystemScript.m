@@ -1,16 +1,16 @@
 Oc = [0;0;0];
-Vc = [2;0;0];
+Vc = [0.5;0;0];
 J = 1e-3 * diag([0.1,0.1,1]);
 g = 9.807;
 m = 0.25;
-Rcu = eye(3);
+Ruc = eye(3);
 
 ddvdt_dv = 0*eye(3);
 ddvdt_dw = 0*eye(3);
 ddwdt_dw = 0*eye(3);
 
 A = [-skew(Oc) ,eye(3),-skew(Vc),zeros(3);
-    zeros(3),ddvdt_dv,skew(Rcu*[0;0;g]),ddvdt_dw;
+    zeros(3),ddvdt_dv,skew(Ruc*[0;0;g]),ddvdt_dw;
     zeros(3),zeros(3),-skew(Oc),eye(3);
     zeros(3),zeros(3),zeros(3),ddwdt_dw;];
 
@@ -20,7 +20,7 @@ B = [[0;0;0],zeros(3);
      [0;0;0],J^-1;];
 
 A1 = [-skew(Oc) ,eye(3),-skew(Vc),zeros(3),zeros(3,4);
-    zeros(3),ddvdt_dv,skew(Rcu*[0;0;g]),ddvdt_dw,zeros(3,4);
+    zeros(3),ddvdt_dv,skew(Ruc*[0;0;g]),ddvdt_dw,zeros(3,4);
     zeros(3),zeros(3),-skew(Oc),eye(3),zeros(3,4);
     zeros(3),zeros(3),zeros(3),ddwdt_dw,zeros(3,4);
     eye(3),zeros(3),zeros(3),zeros(3),zeros(3,4);
@@ -33,13 +33,13 @@ B1 = [[0;0;0],zeros(3);
 
 Nmc=0.00001;
 Q = eye(12); Q(1,1)=10; Q(2,2)=10; % 状态权重矩阵
-R1 = eye(4); R1(1,1)=Nmc; R1(2,2)=Nmc; R1(3,3)=Nmc;R1(4,4)=Nmc;  % 控制权重矩阵
+R = eye(4); R(1,1)=Nmc; R(2,2)=Nmc; R(3,3)=Nmc;R(4,4)=Nmc;  % 控制权重矩阵
 
-K = lqr(A,B,Q,R1,0);
+K = lqr(A,B,Q,R,0);
 
 Lg = 3;
 Q1 = eye(16); Q1(1,1)=Lg; Q1(2,2)=3;Q1(3,3)=Lg;Q1(9,9)=Lg; % 状态权重矩阵
-R1 = eye(4); % R1(1,1)=Nmc; R1(2,2)=Nmc; R1(3,3)=Nmc;R1(4,4)=Nmc;  % 控制权重矩阵
+R1 = eye(4);  R1(1,1)=Nmc; R1(2,2)=Nmc; R1(3,3)=Nmc;R1(4,4)=Nmc;  % 控制权重矩阵
 
 K1 = lqr(A1,B1,Q1,R1,0);
 
@@ -55,5 +55,5 @@ D = zeros (13,4);
 
 sys = ss(A1,B1,C1,D);
 QN=eye(4);
-RN=eye(13)*0.001;
+RN=eye(13);
 [Kest,L]=kalman(sys,QN,RN);
